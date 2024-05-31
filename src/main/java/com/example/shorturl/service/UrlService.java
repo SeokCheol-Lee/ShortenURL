@@ -11,7 +11,6 @@ import java.util.UUID;
 import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,13 +23,10 @@ public class UrlService {
 
     @Transactional
     public String generateShortenUrl(String fullUrl){
-        String uuid = generateShortUuid();
-        if(urlRepository.findById(uuid).isPresent()){
-            throw new DataIntegrityViolationException("Database constraint violation");
-        }
-        Url build = Url.builder().id(uuid).url(fullUrl).build();
+        String uniqueId = generateShortUuid() + urlRepository.count();
+        Url build = Url.builder().id(uniqueId).url(fullUrl).build();
         urlRepository.save(build);
-        return encodeDirectionId(uuid);
+        return encodeDirectionId(uniqueId);
     }
     @Cacheable(value = "url", key = "#encodedDirectionId", cacheManager = "contentCacheManager")
     public String redirectUrl(String encodedDirectionId){
