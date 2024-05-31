@@ -23,10 +23,10 @@ public class UrlService {
 
     @Transactional
     public String generateShortenUrl(String fullUrl){
-        String uuid = generateShortUuid();
-        Url build = Url.builder().id(uuid).url(fullUrl).build();
+        String uniqueId = generateShortUuid() + urlRepository.count();
+        Url build = Url.builder().id(uniqueId).url(fullUrl).build();
         urlRepository.save(build);
-        return encodeDirectionId(uuid);
+        return encodeDirectionId(uniqueId);
     }
     @Cacheable(value = "url", key = "#encodedDirectionId", cacheManager = "contentCacheManager")
     public String redirectUrl(String encodedDirectionId){
