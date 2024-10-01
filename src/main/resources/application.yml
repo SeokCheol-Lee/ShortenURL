@@ -32,4 +32,4 @@ springdoc:
   model-and-view-allowed: true
   paths-to-match:
 server:
-  port: 80
+  port: 8888
